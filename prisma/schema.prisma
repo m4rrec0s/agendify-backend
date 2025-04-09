@@ -1,0 +1,94 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  firebaseUid String   @unique
+  email       String   @unique
+  name        String
+  imageUrl    String?
+  role        String // "cliente" ou "proprietario"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  businesses    Business[]     @relation("OwnerBusinesses")
+  appointments  Appointment[]  @relation("ClientAppointments")
+  notifications Notification[] @relation("UserNotifications")
+}
+
+model Category {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  businesses Business[]
+}
+
+model Business {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId      String   @db.ObjectId
+  name         String
+  imageUrl     String?
+  description  String?
+  address      String?
+  phone        String?
+  categoryId   String   @db.ObjectId
+  workingHours Json // Ex: { "segunda": { "start": "09:00", "end": "18:00" } }
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  owner        User          @relation("OwnerBusinesses", fields: [ownerId], references: [id])
+  category     Category      @relation(fields: [categoryId], references: [id])
+  services     Service[]
+  appointments Appointment[]
+}
+
+model Service {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  businessId  String   @db.ObjectId
+  name        String
+  description String?
+  imageUrl    String?
+  duration    Int // em minutos
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  business     Business      @relation(fields: [businessId], references: [id])
+  appointments Appointment[]
+}
+
+model Appointment {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  businessId String   @db.ObjectId
+  serviceId  String   @db.ObjectId
+  clientId   String   @db.ObjectId
+  date       DateTime
+  status     String // "pendente", "confirmado", "cancelado"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id])
+  service  Service  @relation(fields: [serviceId], references: [id])
+  client   User     @relation("ClientAppointments", fields: [clientId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  type      String // "lembrete", "novidade"
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation("UserNotifications", fields: [userId], references: [id])
+}
