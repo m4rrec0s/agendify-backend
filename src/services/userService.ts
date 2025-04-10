@@ -39,7 +39,9 @@ class UserService {
 
   async getAllUsers() {
     try {
-      const users = await prisma.user.findMany();
+      const users = await prisma.user.findMany({
+        include: { businesses: true, appointments: true },
+      });
       return users;
     } catch (error: any) {
       throw new Error(`Erro ao obter usuários: ${error.message}`);
@@ -50,6 +52,12 @@ class UserService {
     try {
       const user = await prisma.user.findUnique({
         where: { id },
+        include: {
+          businesses: true,
+          appointments: {
+            include: { business: true, service: true },
+          },
+        },
       });
       return user;
     } catch (error: any) {

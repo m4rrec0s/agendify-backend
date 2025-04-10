@@ -125,6 +125,7 @@ class BusinessService {
         include: {
           owner: true,
           category: true,
+          services: true,
         },
       });
       return business;
@@ -139,6 +140,7 @@ class BusinessService {
         include: {
           owner: true,
           category: true,
+          services: true,
         },
       });
       return businesses;
