@@ -142,6 +142,35 @@ class BusinessController {
       res.status(400).json({ message: error.message });
     }
   }
+
+  async getBusinessStats(req: Request, res: Response): Promise<void> {
+    const businessId = req.params.id;
+
+    try {
+      const businessStats = await businessService.getBusinessStats(businessId);
+      res.status(200).json(businessStats);
+    } catch (error: any) {
+      console.error("Error fetching business stats:", error);
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  async getBusinessByOwnerUid(req: Request, res: Response): Promise<void> {
+    const firebaseUid = req.user?.uid;
+
+    if (!firebaseUid) {
+      res.status(401).json({ message: "Usuário não autenticado" });
+      return;
+    }
+
+    try {
+      const business = await businessService.getBusinessByOwnerUid(firebaseUid);
+      res.status(200).json({ business });
+    } catch (error: any) {
+      console.error("Error fetching business by owner UID:", error);
+      res.status(400).json({ message: error.message });
+    }
+  }
 }
 
 export default new BusinessController();

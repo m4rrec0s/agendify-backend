@@ -44,10 +44,17 @@ router.put(
   businessController.updateBusiness
 );
 router.delete("/business/:id", verifyToken, businessController.deleteBusiness);
+router.get("/business/:id/businessStats", businessController.getBusinessStats);
+router.get(
+  "/owner/my/business",
+  verifyToken,
+  businessController.getBusinessByOwnerUid
+);
 
 // ============== Category Routes ==============
 router.post("/category", verifyToken, categoryController.createCategory);
 router.get("/categories", categoryController.getCategories);
+router.get("/category/:id", categoryController.getCategoryById);
 router.put("/category/:id", categoryController.updateCategory);
 router.delete("/category/:id", categoryController.deleteCategory);
 
@@ -61,6 +68,30 @@ router.get(
   "/user/appointments",
   verifyToken,
   appointmentController.getAppointments
+);
+
+router.get(
+  "/business/:businessId/appointments",
+  verifyToken,
+  appointmentController.getAppointmentsByBusiness
+);
+
+router.get(
+  "/user/:clientId/appointments",
+  verifyToken,
+  appointmentController.getAppointmentsByClient
+);
+
+router.put(
+  "/appointment/:id",
+  verifyToken,
+  appointmentController.updateAppointment
+);
+
+router.delete(
+  "/appointment/:id",
+  verifyToken,
+  appointmentController.deleteAppointment
 );
 
 // ================ Service Routes ================

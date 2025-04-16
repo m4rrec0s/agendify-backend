@@ -47,6 +47,88 @@ class AppointmentController {
       return;
     }
   }
+
+  async getAppointmentsByBusiness(req: Request, res: Response): Promise<void> {
+    const businessId = req.params.businessId;
+
+    if (!businessId) {
+      res.status(400).json({ message: "ID do negócio não fornecido" });
+      return;
+    }
+
+    try {
+      const appointments = await appointmentService.getAppointmentsByBusiness(
+        businessId
+      );
+      res.status(200).json({ appointments });
+      return;
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+      return;
+    }
+  }
+
+  async updateAppointment(req: Request, res: Response): Promise<void> {
+    const appointmentId = req.params.id;
+    const { status } = req.body;
+
+    if (!appointmentId) {
+      res.status(400).json({ message: "ID do agendamento não fornecido" });
+      return;
+    }
+
+    try {
+      const updatedAppointment = await appointmentService.updateAppointment(
+        appointmentId,
+        status
+      );
+      res
+        .status(200)
+        .json({ message: "Agendamento atualizado", updatedAppointment });
+      return;
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+      return;
+    }
+  }
+
+  async deleteAppointment(req: Request, res: Response): Promise<void> {
+    const appointmentId = req.params.id;
+
+    if (!appointmentId) {
+      res.status(400).json({ message: "ID do agendamento não fornecido" });
+      return;
+    }
+
+    try {
+      await appointmentService.deleteAppointment(appointmentId);
+      res.status(200).json({ message: "Agendamento excluído com sucesso" });
+      return;
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+      return;
+    }
+  }
+
+  async getAppointmentsByClient(req: Request, res: Response): Promise<void> {
+    const clientId = req.params.clientId;
+
+    if (!clientId) {
+      res.status(400).json({ message: "ID do cliente não fornecido" });
+      return;
+    }
+
+    try {
+      const appointments = await appointmentService.getAppointmentsByClient(
+        clientId
+      );
+      res.status(200).json({ appointments });
+      return;
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+      return;
+    }
+  }
 }
 
 export default new AppointmentController();
